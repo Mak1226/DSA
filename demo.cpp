@@ -41,5 +41,4 @@ int main()
     // int n = 231787;
     // cout << (int)(log10(n) + 1) << endl;
     // cout << __builtin_popcount(n) << endl;
-    return 0;
 }
