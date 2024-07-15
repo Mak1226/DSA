@@ -49,6 +49,7 @@ void maxOnes(vector<vector<int>> v);
 void search2DMatrix(vector<vector<int>> v, int target);
 void search2DUnsorted(vector<vector<int>> v, int target);
 void peakElement2D(vector<vector<int>> v);
+void medianSortedArray(vector<vector<int>> v);
 
 int main()
 {

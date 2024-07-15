@@ -1,1 +1,5 @@
--1
+1. MaxOnes
+2. Search
+3. Search (row,col) sorted Matrix
+4. Peak
+5. Median
