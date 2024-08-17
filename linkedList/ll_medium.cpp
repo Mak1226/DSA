@@ -19,6 +19,10 @@ void createLoop(Node *head, int pos);
 void detectLoop(Node *head);
 void lengthLoop(Node *head);
 void startNodeLoop(Node *head);
+void sortList(Node *head);
+void deleteKey(Node *head, int k);
+void pairSum(Node *head, int target);
+void deleteDuplicates(Node* head);
 
 int main()
 {
@@ -36,7 +40,11 @@ int main()
             "11.Intersection of Nodes\n"
             "12.Detect Loop\n"
             "13.Length of Loop\n"
-            "14.Loop Starting Point"
+            "14.Loop Starting Point\n"
+            "15.Sort List\n"
+            "16.Delete key\n"
+            "17.Pairs with sum\n"
+            "18.Remove Duplicate"
          << endl;
     cin >> choice;
     switch (choice)
@@ -233,6 +241,54 @@ int main()
         head = Node::createList({1, 2, 3, 4, 5, 6});
         createLoop(head, 4);
         startNodeLoop(head);
+        break;
+    }
+    case 15:
+    {
+        cout << "Test Case 1" << endl;
+        cout << "8 7 6 5 4 3 2 1" << endl;
+        Node *head = Node::createList({8, 7, 6, 5, 4, 3, 2, 1});
+        sortList(head);
+        cout << "Test Case 2" << endl;
+        cout << "5 4 3 2 1" << endl;
+        head = Node::createList({5, 4, 3, 2, 1});
+        sortList(head);
+        break;
+    }
+    case 16:
+    {
+        cout << "Test Case 1" << endl;
+        cout << "1 2 3 3 3 4 5\nTarget: 3" << endl;
+        Node *head = Node::createList({1, 2, 3, 3, 3, 4, 5});
+        deleteKey(head, 3);
+        cout << "Test Case 2" << endl;
+        cout << "1 1 1 2 3\nTarget: 1" << endl;
+        head = Node::createList({1, 1, 1, 2, 3});
+        deleteKey(head, 1);
+        break;
+    }
+    case 17:
+    {
+        cout << "Test Case 1" << endl;
+        cout << "1 2 4 5 6 8 9\nTarget: 7" << endl;
+        Node *head = Node::createList({1, 2, 4, 5, 6, 8, 9});
+        pairSum(head, 7);
+        cout << "Test Case 2" << endl;
+        cout << "1 5 6\nTarget: 6" << endl;
+        head = Node::createList({1, 5, 6});
+        pairSum(head, 6);
+        break;
+    }
+    case 18:
+    {
+        cout << "Test Case 1" << endl;
+        cout << "1 2 2 3 3 3 4 4 4 4 5 5 5 5 5" << endl;
+        Node *head = Node::createList({1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5});
+        deleteDuplicates(head);
+        cout << "Test Case 2" << endl;
+        cout << "5 5 5 5 5" << endl;
+        head = Node::createList({5, 5, 5, 5, 5});
+        deleteDuplicates(head);
         break;
     }
     default:
@@ -607,4 +663,125 @@ void startNodeLoop(Node *head)
         }
     }
     cout << 0 << endl;
+}
+Node *findMiddle(Node *head)
+{
+    Node *dummy = new Node();
+    dummy->next = head;
+    Node *fast = head, *slow = dummy;
+    while (fast && fast->next)
+    {
+        fast = fast->next->next;
+        slow = slow->next;
+    }
+    delete dummy;
+    return slow;
+}
+Node *merge(Node *left, Node *right)
+{
+    Node *dummy = new Node();
+    Node *temp = dummy;
+    while (left && right)
+    {
+        if (left->data < right->data)
+        {
+            temp->next = left;
+            temp = left;
+            left = left->next;
+        }
+        else
+        {
+            temp->next = right;
+            temp = right;
+            right = right->next;
+        }
+    }
+    if (left)
+        temp->next = left;
+    else
+        temp->next = right;
+    return dummy->next;
+}
+Node *sortLinkedList(Node *head)
+{
+    if (!head || !head->next)
+        return head;
+    Node *middle = findMiddle(head);
+    Node *leftHead = head, *rightHead = middle->next;
+    middle->next = nullptr;
+    leftHead = sortLinkedList(leftHead);
+    rightHead = sortLinkedList(rightHead);
+    return merge(leftHead, rightHead);
+}
+void sortList(Node *head)
+{
+    head = sortLinkedList(head);
+    Node::display(head);
+}
+void deleteKey(Node *head, int k)
+{
+    Node *it = head, *nextNode, *prevNode = nullptr;
+    while (it)
+    {
+        if (it->data == k)
+        {
+            if (it == head)
+                head = head->next;
+            nextNode = it->next;
+            prevNode = it->prev;
+            if (nextNode)
+                nextNode->prev = prevNode;
+            if (prevNode)
+                prevNode->next = nextNode;
+            delete it;
+            it = nextNode;
+        }
+        else
+            it = it->next;
+    }
+    Node::display(head);
+}
+void pairSum(Node *head, int target)
+{
+    vector<pair<int,int>> v;
+    Node *left = head, *right = head;
+    while(right->next)
+        right = right->next;
+    while(left->data < right->data)
+    {
+        int sum = left->data + right->data;
+        if(sum == target)
+        {
+            v.push_back({left->data, right->data});
+            left = left->next;
+            right = right->prev;
+        }
+        if(sum < target)
+            left = left->next;
+        else if(sum > target)
+            right = right->prev;
+    }
+    for(auto it: v)
+        cout << "[" << it.first << "," << it.second << "]" << " ";
+    cout << endl;
+}
+void deleteDuplicates(Node *head)
+{
+    Node *it = head;
+    while(it)
+    {
+        int key = it->data;
+        Node *itr = it->next;
+        while(itr && itr->data == key)
+        {
+            Node *temp = itr;
+            itr = itr->next;
+            delete temp;
+        }
+        it->next = itr;
+        if(itr)
+            itr->prev = it;
+        it = itr;
+    }
+    Node::display(head);
 }
