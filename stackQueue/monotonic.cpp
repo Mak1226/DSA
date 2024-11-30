@@ -7,6 +7,10 @@ void previousSmallerElement(vector<int> v);
 void ngeToRight(vector<int> v, int q, vector<int> ind);
 void trappingRainWaterI(vector<int> v);
 void trappingRainWaterII(vector<int> v);
+void subarrayMinSum(vector<int> v);
+void subarrayMaxSum(vector<int> v);
+void subarraySumRange(vector<int> v);
+void asteroidCollision(vector<int> v);
 
 int main()
 {
@@ -23,18 +27,18 @@ int main()
     case 1:
     {
         cout << "Test Case 1" << endl;
-        cout << "" << endl;
-        nextGreaterElementI({});
+        cout << "6 0 8 1 3" << endl;
+        nextGreaterElementI({6, 0, 8, 1, 3});
         cout << "Test Case 2" << endl;
-        cout << "" << endl;
-        nextGreaterElementI({});
+        cout << "4 12 5 3 1 2 5 3 1 2 4 6" << endl;
+        nextGreaterElementI({4, 12, 5, 3, 1, 2, 5, 3, 1, 2, 4, 6});
         break;
     }
     case 2:
     {
         cout << "Test Case 1" << endl;
-        cout << "" << endl;
-        nextGreaterElementII({});
+        cout << "2 10 12 1 11" << endl;
+        nextGreaterElementII({2, 10, 12, 1, 11});
         cout << "Test Case 2" << endl;
         cout << "" << endl;
         nextGreaterElementII({});
@@ -43,11 +47,11 @@ int main()
     case 3:
     {
         cout << "Test Case 1" << endl;
-        cout << "" << endl;
-        previousSmallerElement({});
+        cout << "4 5 2 10 8" << endl;
+        previousSmallerElement({4, 5, 2, 10, 8});
         cout << "Test Case 2" << endl;
-        cout << "" << endl;
-        previousSmallerElement({});
+        cout << "5 7 9 6 7 4 5 1 3 7" << endl;
+        previousSmallerElement({5, 7, 9, 6, 7, 4, 5, 1, 3, 7});
         break;
     }
     default:
@@ -95,7 +99,7 @@ void previousSmallerElement(vector<int> v)
     vector<int> ans;
     for (int it : v)
     {
-        while (!st.empty() && st.top() > it)
+        while (!st.empty() && st.top() >= it)
             st.pop();
         ans.push_back(st.empty() ? -1 : st.top());
         st.push(it);
@@ -162,4 +166,119 @@ void trappingRainWaterII(vector<int> v)
         }
     }
     cout << t << endl;
+}
+vector<int> nextSmallerElementIndex(vector<int> v)
+{
+    stack<int> st;
+    vector<int> ans;
+    int n = v.size();
+    for (int i = n - 1; i >= 0; i--)
+    {
+        while (!st.empty() && v[st.top()] > v[i])
+            st.pop();
+        ans[i] = st.empty() ? n : st.top();
+        st.push(i);
+    }
+    return ans;
+}
+vector<int> previousSmallerEqualsToElementIndex(vector<int> v)
+{
+    stack<int> st;
+    vector<int> ans;
+    int n = v.size();
+    for (int i = 0; i < n; i++)
+    {
+        while (!st.empty() && v[st.top()] >= v[i])
+            st.pop();
+        ans[i] = st.empty() ? -1 : st.top();
+        st.push(i);
+    }
+    return ans;
+}
+void subarrayMinSum(vector<int> v)
+{
+    vector<int> n = nextSmallerElementIndex(v);
+    vector<int> p = previousSmallerEqualsToElementIndex(v);
+    long long sum = 0;
+    int lnt = v.size();
+    for (int i = 0; i < lnt; i++)
+    {
+        int l = i - p[i];
+        int r = n[i] - i;
+        sum += 1LL * l * r * v[i];
+    }
+    cout << sum << endl;
+}
+vector<int> nextGreaterElementIndex(vector<int> v)
+{
+    stack<int> st;
+    vector<int> ans;
+    int n = v.size();
+    for (int i = n - 1; i >= 0; i--)
+    {
+        while (!st.empty() && v[st.top()] < v[i])
+            st.pop();
+        ans[i] = st.empty() ? n : st.top();
+        st.push(i);
+    }
+    return ans;
+}
+vector<int> previousGreaterEqualsToElementIndex(vector<int> v)
+{
+    stack<int> st;
+    vector<int> ans;
+    int n = v.size();
+    for (int i = 0; i < n; i++)
+    {
+        while (!st.empty() && v[st.top()] <= v[i])
+            st.pop();
+        ans[i] = st.empty() ? -1 : st.top();
+        st.push(i);
+    }
+    return ans;
+}
+void subarrayMaxSum(vector<int> v)
+{
+    vector<int> n = nextGreaterElementIndex(v);
+    vector<int> p = previousGreaterEqualsToElementIndex(v);
+    long long sum = 0;
+    int lnt = v.size();
+    for (int i = 0; i < lnt; i++)
+    {
+        int l = i - p[i];
+        int r = n[i] - i;
+        sum += 1LL * l * r * v[i];
+    }
+    cout << sum << endl;
+}
+void subarraySumRange(vector<int> v)
+{
+    subarrayMaxSum(v);
+    subarrayMinSum(v);
+}
+void asteroidCollision(vector<int> v)
+{
+    int n = v.size();
+    vector<int> st;
+    for (int i = 0; i < n; i++)
+    {
+        if (v[i] > 0)
+            st.push_back(v[i]);
+        else
+        {
+            while (!st.empty() && st.back() > 0 && st.back() < abs(v[i]))
+                st.pop_back();
+            if (!st.empty() && st.back() == abs(v[i]))
+                st.pop_back();
+            if (st.empty() || st.back() < 0)
+                st.push_back(v[i]);
+        }
+    }
+    for (int it : st)
+        cout << it << " ";
+    cout << endl;
+}
+void removeKElements(vector<int> v)
+{
+    
 }
